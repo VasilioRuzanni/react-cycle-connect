@@ -1,0 +1,47 @@
+{
+  "name": "react-cycle-connect",
+  "version": "0.0.1",
+  "description": "Bring Cycle.js dataflows and side effect control to React.",
+  "license": "MIT",
+  "homepage": "https://github.com/VasilioRuzanni/react-cycle-connect",
+  "repository": "https://github.com/VasilioRuzanni/react-cycle-connect",
+  "bugs": "https://github.com/VasilioRuzanni/react-cycle-connect/issues",
+  "main": "lib/index.js",
+  "umd:main": "dist/react-cycle-connect.umd.js",
+  "module": "dist/es/index.js",
+  "typings": "lib/index.d.ts",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "lint": "tslint -c tslint.json src/**/*.ts",
+    "prebuild": "rm -rf build",
+    "compile": "tsc",
+    "bundle": "rollup -c rollup.config.js",
+    "build": "npm run compile && npm run bundle && cp -rf {package.json,README.md,LICENSE} build",
+    "ava": "rm -rf build_test && tsc --p tsconfig.test.json && ava build_test/**/*.js",
+    "test": "npm run lint && npm run ava",
+    "pack-only": "cd build && npm pack"
+  },
+  "dependencies": {
+    "@cycle/isolate": "^3.2.0",
+    "@cycle/run": "^4.0.0",
+    "cycle-onionify": "^5.0.0",
+    "react": "^16.2.0",
+    "xstream": "^11.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^16.0.38",
+    "@types/react-dom": "^16.0.4",
+    "ava": "0.25.0",
+    "prettier": "^1.10.2",
+    "rollup": "^0.56.0",
+    "rollup-plugin-commonjs": "^8.3.0",
+    "rollup-plugin-node-resolve": "^3.0.3",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rollup-plugin-typescript2": "^0.11.1",
+    "rollup-plugin-uglify": "^3.0.0",
+    "tslint": "5.9.1",
+    "tslint-config-prettier": "^1.8.0",
+    "tslint-react": "^3.5.1",
+    "typescript": "2.7.1"
+  }
+}

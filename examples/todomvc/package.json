@@ -1,0 +1,35 @@
+{
+  "name": "todomvc",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@cycle/http": "^14.9.0",
+    "@cycle/run": "^4.1.0",
+    "classnames": "^2.2.5",
+    "cycle-onionify": "^5.0.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-scripts-ts": "2.13.0",
+    "todomvc-app-css": "^2.1.0",
+    "xstream": "^11.2.0",
+    "react-cycle-connect": "latest"
+  },
+  "scripts": {
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject"
+  },
+  "devDependencies": {
+    "@types/classnames": "^2.2.3",
+    "@types/jest": "^22.1.2",
+    "@types/node": "^9.4.6",
+    "@types/react": "^16.0.38",
+    "@types/react-dom": "^16.0.4",
+    "tslint": "^5.9.1",
+    "tslint-react": "^3.5.1",
+    "tslint-config-prettier": "^1.8.0",
+    "typescript": "^2.7.1"
+  }
+}
