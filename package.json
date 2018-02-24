@@ -19,7 +19,8 @@
     "build": "npm run compile && npm run bundle && cp -rf {package.json,README.md,LICENSE} build",
     "ava": "rm -rf build_test && tsc --p tsconfig.test.json && ava build_test/**/*.js",
     "test": "npm run lint && npm run ava",
-    "pack-only": "cd build && npm pack"
+    "pack-only": "cd build && npm pack",
+    "publish": "cd build && npm publish"
   },
   "dependencies": {
     "@cycle/isolate": "^3.2.0",
