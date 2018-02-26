@@ -128,7 +128,7 @@ Using [yarn](https://yarnpkg.com):
 
 The motivation to create this lib was based off the need to retain the React-style composability of the **view** layer using regular React components, reuse existing React components, make it (the lib) easily/incrementally adoptable in an ongoing React project, but also take advantage of the Cycle.js' [MVI](https://cycle.js.org/model-view-intent.html) pattern and side effect control.
 
-At the same time, while the most valuable thing from `Cycle` is the **pattern** itself, there are numerous available libs/plugins for Cycle.js to take advantage of, thus taking the best of both worlds.
+At the same time, while the most valuable thing from `Cycle` is the **pattern** itself, there are numerous available libs/plugins for Cycle.js to take advantage of, letting us take the best of both worlds.
 
 This way, you can still use anything from React stack (e.g., `react-router` to compose your routed app screens), but describe the interactions as a dataflow, with pure functions and reactive streams. Most of React components are going to be ["dumb"](https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0) (and also [stateless functional](https://hackernoon.com/react-stateless-functional-components-nine-wins-you-might-have-overlooked-997b0d933dbc) aka SFC) since all the backing logic and cross-component communication would be handled by a tree of `Cycle.js` programs.
 
