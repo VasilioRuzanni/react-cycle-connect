@@ -7,8 +7,8 @@ import uglify from 'rollup-plugin-uglify';
 const pkg = require('./package.json');
 const buildFolder = 'build';
 const globalsMap = {
-  'react': 'React',
-  'xstream': 'xstream',
+  react: 'React',
+  xstream: 'xstream',
   // TODO: Does it make sense to package UMD pointing to these at all?
   'xstream/extra/dropRepeats': 'xstream',
   'xstream/extra/sampleCombine': 'xstream',
@@ -28,7 +28,7 @@ const commonExternal = [
 
 const commonSettings = {
   watch: {
-    include: 'src/**',
+    include: 'src/**'
   },
   plugins: [
     typescript({
@@ -57,7 +57,7 @@ const mainCfgBase = Object.assign({}, commonSettings, {
       name: 'reactCycleConnect',
       format: 'cjs',
       sourcemap: true
-    },
+    }
     // {
     //   file: `${buildFolder}/dist/react-cycle-connect.umd.min.js`,
     //   name: 'reactCycleConnect',
@@ -80,7 +80,7 @@ const mainCfgMinified = Object.assign({}, mainCfgBase, {
     }
   ],
   plugins: commonSettings.plugins.concat(uglify())
-})
+});
 
 const extraOnionifyCfgBase = Object.assign({}, commonSettings, {
   input: 'src/extra/onionify/index.ts',
@@ -90,7 +90,7 @@ const extraOnionifyCfgBase = Object.assign({}, commonSettings, {
       name: 'reactCycleConnect.extra.onionify',
       format: 'cjs',
       sourcemap: true
-    },
+    }
     // {
     //   file: `${buildFolder}/dist/react-cycle-connect-extra-onionify.umd.min.js`,
     //   name: 'reactCycleConnect.extra.onionify',
@@ -99,10 +99,7 @@ const extraOnionifyCfgBase = Object.assign({}, commonSettings, {
     //   globals: globalsMap
     // }
   ],
-  external: commonExternal.concat([
-    'cycle-onionify',
-    'react-cycle-connect'
-  ])
+  external: commonExternal.concat([ 'cycle-onionify', 'react-cycle-connect' ])
 });
 
 const extraOnionifyCfgMinified = Object.assign({}, extraOnionifyCfgBase, {
@@ -116,7 +113,7 @@ const extraOnionifyCfgMinified = Object.assign({}, extraOnionifyCfgBase, {
     }
   ],
   plugins: commonSettings.plugins.concat(uglify())
-})
+});
 
 // if (process.env.NODE_ENV === 'production') {
 //   mainCfg.plugins.push(uglify());

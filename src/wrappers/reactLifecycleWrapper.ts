@@ -43,8 +43,8 @@ lifecycleHookNames.forEach(hookName => {
 });
 
 export function makeReactLifecycleWrapper<TProps>(): {
-  lifecycleWrapper: (mainFn: CycleMainFn) => CycleMainFn,
-  lifecycleStreams: ReactLifecycleStreams<TProps>
+  lifecycleWrapper: (mainFn: CycleMainFn) => CycleMainFn;
+  lifecycleStreams: ReactLifecycleStreams<TProps>;
 } {
   const name = 'lifecycle';
 
@@ -57,9 +57,7 @@ export function makeReactLifecycleWrapper<TProps>(): {
     return function mainWithReactLifecycle(sources: Sources): Sinks {
       const _sources = {
         ...sources,
-        [name]: new ReactLifecycleSource(
-          lifecycleStreams
-        )
+        [name]: new ReactLifecycleSource(lifecycleStreams)
       };
 
       return mainFn(_sources);

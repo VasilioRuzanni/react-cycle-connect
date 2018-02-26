@@ -39,7 +39,7 @@ export function makeInteractionsWrapper() {
       );
       const sinks = mainFn(sources);
       const upstreamInteractions$ = sinks[name] as Stream<{
-          // tslint:disable-next-line no-any
+        // tslint:disable-next-line no-any
         [propName: string]: Stream<any>;
       }>;
 
@@ -53,12 +53,12 @@ export function makeInteractionsWrapper() {
             const fnCallStreams = Object.keys(upstreamInteractions)
               .filter(propName => typeof props[propName] === 'function')
               .map(propName => {
-                return upstreamInteractions[propName].map(
-                  propInteractionValue => ({
-                    fn: props[propName],
-                    args: [propInteractionValue]
-                  })
-                );
+                return upstreamInteractions[
+                  propName
+                ].map(propInteractionValue => ({
+                  fn: props[propName],
+                  args: [propInteractionValue]
+                }));
               });
 
             return xs.merge.apply(null, fnCallStreams);

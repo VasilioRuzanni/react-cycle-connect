@@ -15,7 +15,7 @@ export type FnCallEffect = {
 export function makeFnCallEffectDriver() {
   return function fnCallEffectDriver(fnCallEffect$: Stream<FnCallEffect>) {
     fnCallEffect$.addListener({
-      next: (fnCallEffect) => {
+      next(fnCallEffect) {
         if (typeof fnCallEffect.fn === 'function') {
           fnCallEffect.fn.apply(null, fnCallEffect.args);
         }

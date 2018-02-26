@@ -87,13 +87,11 @@ export function cycleConnect<
   ) {
     const sourceComponentName =
       (options.render && 'customRenderFn') ||
-      (
-        WrappedComponent && (
-          WrappedComponent.displayName ||
+      (WrappedComponent &&
+        (WrappedComponent.displayName ||
           WrappedComponent.name ||
-          'AnonymousComponent'
-        )
-      ) || 'defaultRenderFn';
+          'AnonymousComponent')) ||
+      'defaultRenderFn';
 
     const displayName =
       options.displayName || `cycleConnect(${sourceComponentName})`;
@@ -224,7 +222,7 @@ export function cycleConnect<
 
       render() {
         const props = {
-          ...(this.propsSnapshot as any),
+          ...this.propsSnapshot as any,
           interact: this.interactFn,
           interactions: this.interactionsProp
         };

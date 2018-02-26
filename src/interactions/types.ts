@@ -35,9 +35,9 @@ export interface InteractionEvent<TType = any, TValue = any> {
 // TODO: Extend it to preserve the event types somehow, or make
 // easily overridable with explicitly passed type (i.e., as a
 // second generic param)
-export type InteractionsSink<TProps, TOverrides = {}> = Stream<Partial<{
-  [P in keyof TProps]: Stream<any>
-}> & TOverrides>;
+export type InteractionsSink<TProps, TOverrides = {}> = Stream<
+  Partial<{ [P in keyof TProps]: Stream<any> }> & TOverrides
+>;
 
 export interface InteractionsSourceInternal {
   select<TEvent = any, TInteractionType extends string = string>(
@@ -49,5 +49,5 @@ export type DynamicInteractionStreams<TEvent> = {
   [P in keyof TEvent]: Stream<TEvent[P]>
 };
 
-export type InteractionsSource<T = any> = 
-  InteractionsSourceInternal & DynamicInteractionStreams<T>;
+export type InteractionsSource<T = any> = InteractionsSourceInternal &
+  DynamicInteractionStreams<T>;

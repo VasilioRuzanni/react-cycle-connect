@@ -44,8 +44,8 @@ export function makeReactPropsWrapper<TProps extends {}>(
         .merge(inputProps$, sinkPropsImitator$)
         .fold<TProps>(
           (combinedProps: TProps, newProps: TProps) => ({
-            ...(combinedProps as any),
-            ...(newProps as any)
+            ...combinedProps as any,
+            ...newProps as any
           }),
           void 0 as any | undefined
         )

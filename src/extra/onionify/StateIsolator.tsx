@@ -14,8 +14,7 @@ const DEFAULT_STATE_CHANNEL_NAME = 'onion';
 
 export const StateIsolator = cycleConnect<StateIsolatorProps>({
   isolate: (props: StateIsolatorProps) => ({
-    [props.channelName || DEFAULT_STATE_CHANNEL_NAME]:
-      props.lens || void 0,
+    [props.channelName || DEFAULT_STATE_CHANNEL_NAME]: props.lens || void 0,
     '*': null
   }),
   displayName: 'StateIsolator'

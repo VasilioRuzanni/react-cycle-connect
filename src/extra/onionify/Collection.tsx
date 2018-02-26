@@ -79,7 +79,7 @@ export function itemLens(
       } else if (typeof item === 'undefined') {
         return arr.filter((s, i) => itemKeyFn(s, i) !== key);
       }
-    
+
       return arr.map((s, i) => {
         if (itemKeyFn(s, i) === key) return item;
         return s;
@@ -127,37 +127,30 @@ function makeDefaultItemRender<TItemState extends CycleConnectOptionsProps>(
   ): ReactNode {
     const onionScope = itemKeyFn ? itemLens(itemKeyFn, itemKey) : index;
     const itemScope = itemIsolate || defaultItemIsolate;
-    const otherScopes = typeof itemScope === 'function'
-      ? (itemScope as IsolateOptionFn<TItemState>)(itemState)
-      : itemScope;
+    const otherScopes =
+      typeof itemScope === 'function'
+        ? (itemScope as IsolateOptionFn<TItemState>)(itemState)
+        : itemScope;
 
-    const itemIsolateProp = typeof otherScopes === 'object'
-      ? { ...otherScopes, [channelName]: onionScope }
-      : { '*': otherScopes, [channelName]: onionScope };
+    const itemIsolateProp =
+      typeof otherScopes === 'object'
+        ? { ...otherScopes, [channelName]: onionScope }
+        : { '*': otherScopes, [channelName]: onionScope };
 
     return (
-      <ItemComponent
-        key={itemKey}
-        {...itemState}
-        isolate={itemIsolateProp}
-      />
+      <ItemComponent key={itemKey} {...itemState} isolate={itemIsolateProp} />
     );
   };
 }
 
 function render<TItemState>(props: ViewProps<TItemState>) {
-  const {
-    items,
-    itemKeyFn,
-    itemRender,
-    itemComponent
-  } = props;
+  const { items, itemKeyFn, itemRender, itemComponent } = props;
 
   if (!items) return null;
   if (!itemRender && !itemComponent) {
     throw new Error(
       'You need either "itemRender" or "itemComponent" attribute ' +
-      'defined on a <Collection>'
+        'defined on a <Collection>'
     );
   }
 

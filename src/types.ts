@@ -48,8 +48,8 @@ export type ConnectedSources<TSourceProps> = Sources & {
 export type ConnectedSinks<TSinkProps> = Sinks & {
   props: Stream<TSinkProps>;
 } & {
-  interactions: Stream<TSinkProps>;
-};
+    interactions: Stream<TSinkProps>;
+  };
 
 export type CycleMainFn<TSourceProps = {}, TSinkProps = {}> = (
   sources: ConnectedSources<TSourceProps> | Sources
