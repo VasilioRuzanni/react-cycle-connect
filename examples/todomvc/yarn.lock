@@ -21,6 +21,10 @@
   dependencies:
     xstream "10.x || 11.x"
 
+"@cycle/storage@^5.0.3":
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/@cycle/storage/-/storage-5.0.3.tgz#9484e9f0b6c44abf5395c9ca5b008d3626e6b64f"
+
 "@types/classnames@^2.2.3":
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/@types/classnames/-/classnames-2.2.3.tgz#3f0ff6873da793870e20a260cada55982f38a9e5"
@@ -1250,6 +1254,10 @@ cycle-onionify@^5.0.0:
     "@cycle/isolate" ">=3"
     "@cycle/run" "*"
     xstream ">=10"
+
+cycle-storageify@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/cycle-storageify/-/cycle-storageify-4.0.1.tgz#bdf16bb53a251c0527ddc3aad8de921a29348efc"
 
 d@1:
   version "1.0.0"

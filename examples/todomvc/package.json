@@ -6,14 +6,16 @@
   "dependencies": {
     "@cycle/http": "^14.9.0",
     "@cycle/run": "^4.1.0",
+    "@cycle/storage": "^5.0.3",
     "classnames": "^2.2.5",
     "cycle-onionify": "^5.0.0",
+    "cycle-storageify": "^4.0.1",
     "react": "^16.2.0",
+    "react-cycle-connect": "latest",
     "react-dom": "^16.2.0",
     "react-scripts-ts": "2.13.0",
     "todomvc-app-css": "^2.1.0",
-    "xstream": "^11.2.0",
-    "react-cycle-connect": "latest"
+    "xstream": "^11.2.0"
   },
   "scripts": {
     "start": "react-scripts-ts start",
@@ -28,8 +30,8 @@
     "@types/react": "^16.0.38",
     "@types/react-dom": "^16.0.4",
     "tslint": "^5.9.1",
-    "tslint-react": "^3.5.1",
     "tslint-config-prettier": "^1.8.0",
+    "tslint-react": "^3.5.1",
     "typescript": "^2.7.2"
   }
 }
