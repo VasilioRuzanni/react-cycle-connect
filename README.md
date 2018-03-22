@@ -9,6 +9,8 @@ This isn't a custom implementation of Cycle **pattern** for `React` but a link t
 
 > **Note:** This is an experimental lib and currently works with `React` and `xstream` only. If all goes good, the support for `preact`/`inferno` (instead of `React`) and for `RxJS`/`most` (instead of `xstream`) is anticipated. Nothing prevents from having `react-native` covered too.
 
+> **UPDATE (MAR 2018):** Some internals overhaul is pending and it's currently waiting for Cycle.js to settle on hybrid push-pull reactivity and have internals rewritten to use [Callbags](https://github.com/callbag/callbag) instead of `xstream`. So, `react-cycle-connect` is going to be using Callbags by default too.
+
 **Any feedback is highly appreciated!**
 
 
