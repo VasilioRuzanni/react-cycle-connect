@@ -5,23 +5,23 @@ import React, {
   ComponentType,
   ErrorInfo,
   ReactNode
-} from 'react';
-import xs, { Stream, MemoryStream, Subscription } from 'xstream';
-import { Sources, Sinks, DisposeFunction } from '@cycle/run';
-import isolate from '@cycle/isolate';
-import { makeCycleNode } from './core/makeCycleNode';
-import { makeReactPropsWrapper } from './wrappers/reactPropsWrapper';
+} from "react";
+import xs, { Stream, MemoryStream, Subscription } from "xstream";
+import { Sources, Sinks, DisposeFunction, Drivers, Main } from "@cycle/run";
+import isolate from "@cycle/isolate";
+import { makeCycleNode } from "./core/makeCycleNode";
+import { makeReactPropsWrapper } from "./wrappers/reactPropsWrapper";
 import {
   makeReactLifecycleWrapper,
   ReactLifecycleStreams
-} from './wrappers/reactLifecycleWrapper';
+} from "./wrappers/reactLifecycleWrapper";
 import {
   makeInteractionsWrapper,
   InteractFn,
   InteractionsProp,
   makeInteractionsProp,
   InteractionsProps
-} from './interactions';
+} from "./interactions";
 import {
   StatelessSinkProxies,
   CycleConnectOptions,
@@ -31,13 +31,13 @@ import {
   MakeConnectedComponentFn,
   IsolateOption,
   CycleConnectContextType
-} from './types';
+} from "./types";
 
 const CONTEXT_TYPES = {
   cycleNodeLink: () => null
 };
 
-function noopMainFn(sources: Sources): Sinks {
+function noopMainFn(sources: Sources<Drivers>): Sinks<Main> {
   return {};
 }
 
@@ -73,12 +73,12 @@ export function cycleConnect<
 ): MakeConnectedComponentFn<TProps, InteractionsProps<TInteractionEvents>> {
   let _mainFn: CycleMainFn;
 
-  if (typeof mainFn === 'object') {
+  if (typeof mainFn === "object") {
     options = mainFn as CycleConnectOptions;
     _mainFn = noopMainFn as CycleMainFn;
   }
 
-  if (typeof mainFn === 'function') {
+  if (typeof mainFn === "function") {
     _mainFn = mainFn;
   }
 
@@ -86,12 +86,12 @@ export function cycleConnect<
     WrappedComponent?: ComponentType<TInnerProps>
   ) {
     const sourceComponentName =
-      (options.render && 'customRenderFn') ||
+      (options.render && "customRenderFn") ||
       (WrappedComponent &&
         (WrappedComponent.displayName ||
           WrappedComponent.name ||
-          'AnonymousComponent')) ||
-      'defaultRenderFn';
+          "AnonymousComponent")) ||
+      "defaultRenderFn";
 
     const displayName =
       options.displayName || `cycleConnect(${sourceComponentName})`;
@@ -159,6 +159,8 @@ export function cycleConnect<
           displayName
         );
 
+        this.subscribeToPropsUpdates();
+
         this.disposeCycleNode = this.cycleNode.run();
       }
 
@@ -176,24 +178,25 @@ export function cycleConnect<
         };
       }
 
-      componentWillMount() {
-        this.subscribeToPropsUpdates();
-        this.lifecycleStreams.willMount$._n(null);
-      }
+      // componentWillMount() {
+      //   this.subscribeToPropsUpdates();
+      //   this.lifecycleStreams.willMount$._n(null);
+      // }
 
       componentDidMount() {
+        //   this.lifecycleStreams.willMount$._n(null);
         this.lifecycleStreams.didMount$._n(null);
       }
 
-      componentWillReceiveProps(nextProps: Readonly<TOuterProps>) {
-        this.lifecycleStreams.willReceiveProps$._n(nextProps);
-      }
+      // componentWillReceiveProps(nextProps: Readonly<TOuterProps>) {
+      //   this.lifecycleStreams.willReceiveProps$._n(nextProps);
+      // }
 
       // NOTE: Not passing `nextState` intentionally, keep the state
       // inside the "connected" Cycle program instead.
-      componentWillUpdate(nextProps: Readonly<TOuterProps>) {
-        this.lifecycleStreams.willUpdate$._n(nextProps);
-      }
+      // componentWillUpdate(nextProps: Readonly<TOuterProps>) {
+      //   this.lifecycleStreams.willUpdate$._n(nextProps);
+      // }
 
       componentDidUpdate(prevProps: Readonly<TOuterProps>) {
         this.lifecycleStreams.didUpdate$._n(prevProps);
@@ -212,8 +215,10 @@ export function cycleConnect<
       }
 
       subscribeToPropsUpdates() {
+        console.log("susbcribed to props updates");
         this.props$.endWhen(this.lifecycleStreams.willUnmount$).addListener({
           next: (props: TInnerProps) => {
+            console.log("got a new prop", props);
             this.propsSnapshot = props;
             this.forceUpdate();
           }
@@ -222,12 +227,12 @@ export function cycleConnect<
 
       render() {
         const props = {
-          ...this.propsSnapshot as any,
+          ...(this.propsSnapshot as any),
           interact: this.interactFn,
           interactions: this.interactionsProp
         };
 
-        if (typeof options.render === 'function') {
+        if (typeof options.render === "function") {
           return options.render(props);
         }
 

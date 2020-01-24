@@ -1,6 +1,6 @@
-import { Stream, Subscription } from 'xstream';
-import { adapt } from '@cycle/run/lib/adapt';
-import { InteractionsSourceInternal, InteractionEvent } from './types';
+import { Stream, Subscription } from "xstream";
+import { adapt } from "@cycle/run/lib/adapt";
+import { InteractionsSourceInternal, InteractionEvent } from "./types";
 
 export class DefaultInteractionsSource implements InteractionsSourceInternal {
   _interaction$: Stream<InteractionEvent>;

@@ -1,18 +1,18 @@
-import { ErrorInfo } from 'react';
-import xs, { Stream, MemoryStream } from 'xstream';
-import dropRepeats from 'xstream/extra/dropRepeats';
-import { adapt } from '@cycle/run/lib/adapt';
-import { Sources, Sinks } from '@cycle/run';
-import { CycleMainFn } from '../types';
+import { ErrorInfo } from "react";
+import xs, { Stream, MemoryStream } from "xstream";
+import dropRepeats from "xstream/extra/dropRepeats";
+import { adapt } from "@cycle/run/lib/adapt";
+import { Sources, Sinks, Drivers, Main } from "@cycle/run";
+import { CycleMainFn } from "../types";
 
 const lifecycleHookNames = [
-  'willMount',
-  'didMount',
-  'willReceiveProps',
-  'willUpdate',
-  'didUpdate',
-  'willUnmount',
-  'didCatch'
+  "willMount",
+  "didMount",
+  "willReceiveProps",
+  "willUpdate",
+  "didUpdate",
+  "willUnmount",
+  "didCatch"
 ];
 
 export interface ReactLifecycleStreams<TProps> {
@@ -46,7 +46,7 @@ export function makeReactLifecycleWrapper<TProps>(): {
   lifecycleWrapper: (mainFn: CycleMainFn) => CycleMainFn;
   lifecycleStreams: ReactLifecycleStreams<TProps>;
 } {
-  const name = 'lifecycle';
+  const name = "lifecycle";
 
   const lifecycleStreams = {} as ReactLifecycleStreams<TProps>;
   lifecycleHookNames.forEach(hookName => {
@@ -54,7 +54,9 @@ export function makeReactLifecycleWrapper<TProps>(): {
   });
 
   function reactLifecycleWrapper(mainFn: CycleMainFn): CycleMainFn {
-    return function mainWithReactLifecycle(sources: Sources): Sinks {
+    return function mainWithReactLifecycle(
+      sources: Sources<Drivers>
+    ): Sinks<Main> {
       const _sources = {
         ...sources,
         [name]: new ReactLifecycleSource(lifecycleStreams)

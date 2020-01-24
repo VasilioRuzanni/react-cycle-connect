@@ -1,4 +1,4 @@
-import { Stream } from 'xstream';
+import { Stream } from "xstream";
 
 export type InteractFn = (
   interactionType: string,
@@ -6,7 +6,7 @@ export type InteractFn = (
 ) => (value?: any) => void;
 
 export type InteractionsProp<TInteractionEvents> = {
-  [P in keyof TInteractionEvents]: (eventValue?: TInteractionEvents[P]) => void
+  [P in keyof TInteractionEvents]: (eventValue?: TInteractionEvents[P]) => void;
 };
 
 export type InteractionsProps<TInteractionEvents = any> = {
@@ -29,3 +29,5 @@ export type InteractionsSource<TEvent = any> = {
     interactionSelector: string
   ): Stream<TEvent>;
 } & { [P in keyof TEvent]: Stream<TEvent[P]> };
+
+export type InteractionsSourceInternal = any;

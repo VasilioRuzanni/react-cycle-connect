@@ -1,6 +1,6 @@
-import React, { Children, Key, ComponentType, ReactNode } from 'react';
-import xs, { Stream } from 'xstream';
-import { StateSource, Scope, Lens } from 'cycle-onionify';
+import React, { Children, Key, ComponentType, ReactNode } from "react";
+import xs, { Stream } from "xstream";
+import { StateSource, Scope, Lens } from "@cycle/state";
 import {
   cycleConnect,
   ReactPropsSource,
@@ -8,7 +8,7 @@ import {
   CycleConnectOptionsProps,
   IsolateOption,
   IsolateOptionFn
-} from 'react-cycle-connect';
+} from "react-cycle-connect";
 
 // TODO: Reconsider the implementation to make it more TypeScript-friendly
 
@@ -47,24 +47,24 @@ export interface Sinks<TItemState> {
   }>;
 }
 
-// TODO Assuming the use of `cycle-onionify` for now,
+// TODO Assuming the use of `@cycle/state` for now,
 // make configurable, since onionify itself supports that,
 // so that it could be set globally, without the need for
 // every component to explicitly specify the `channelName`.
-const DEFAULT_STATE_CHANNEL_NAME = 'onion';
+const DEFAULT_STATE_CHANNEL_NAME = "state";
 
 export function defaultItemIsolate<TProps>(props: TProps) {
-  return { '*': null };
+  return { "*": null };
 }
 
-// Note: Reusing the `cycle-onionify`s lens implementation almost as is.
+// Note: Reusing the `@cycle/state`s lens implementation almost as is.
 export function itemLens(
   itemKeyFn: ItemKeyFn<any>,
   key: Key
 ): Lens<any[], any> {
   return {
     get(arr: Array<any> | undefined): any {
-      if (typeof arr === 'undefined') return void 0;
+      if (typeof arr === "undefined") return void 0;
       for (let i = 0, n = arr.length; i < n; ++i) {
         if (itemKeyFn(arr[i], i) === key) {
           return arr[i];
@@ -74,9 +74,9 @@ export function itemLens(
     },
 
     set(arr: Array<any> | undefined, item: any): any {
-      if (typeof arr === 'undefined') {
+      if (typeof arr === "undefined") {
         return [item];
-      } else if (typeof item === 'undefined') {
+      } else if (typeof item === "undefined") {
         return arr.filter((s, i) => itemKeyFn(s, i) !== key);
       }
 
@@ -91,12 +91,12 @@ export function itemLens(
 export function main(sources: Sources): Sinks<any> {
   const state$ = xs.fromObservable(
     sources.props
-      .pluck('channelName')
+      .pluck("channelName")
       .map(
         (channelName?: string) =>
           (sources[channelName || DEFAULT_STATE_CHANNEL_NAME] as StateSource<
             any
-          >).state$
+          >).stream
       )
       .flatten()
   );
@@ -125,17 +125,17 @@ function makeDefaultItemRender<TItemState extends CycleConnectOptionsProps>(
     itemKey: Key,
     index: number
   ): ReactNode {
-    const onionScope = itemKeyFn ? itemLens(itemKeyFn, itemKey) : index;
+    const stateScope = itemKeyFn ? itemLens(itemKeyFn, itemKey) : index;
     const itemScope = itemIsolate || defaultItemIsolate;
     const otherScopes =
-      typeof itemScope === 'function'
+      typeof itemScope === "function"
         ? (itemScope as IsolateOptionFn<TItemState>)(itemState)
         : itemScope;
 
     const itemIsolateProp =
-      typeof otherScopes === 'object'
-        ? { ...otherScopes, [channelName]: onionScope }
-        : { '*': otherScopes, [channelName]: onionScope };
+      typeof otherScopes === "object"
+        ? { ...otherScopes, [channelName]: stateScope }
+        : { "*": otherScopes, [channelName]: stateScope };
 
     return (
       <ItemComponent key={itemKey} {...itemState} isolate={itemIsolateProp} />
@@ -150,7 +150,7 @@ function render<TItemState>(props: ViewProps<TItemState>) {
   if (!itemRender && !itemComponent) {
     throw new Error(
       'You need either "itemRender" or "itemComponent" attribute ' +
-        'defined on a <Collection>'
+        "defined on a <Collection>"
     );
   }
 
@@ -164,10 +164,10 @@ function render<TItemState>(props: ViewProps<TItemState>) {
 const cycleConnectOpts = {
   isolate: (props: CollectionProps) => ({
     [props.channelName || DEFAULT_STATE_CHANNEL_NAME]: props.lens || void 0,
-    '*': null
+    "*": null
   }),
   render,
-  displayName: 'Collection'
+  displayName: "Collection"
 };
 
 export const Collection = cycleConnect(main, cycleConnectOpts)();

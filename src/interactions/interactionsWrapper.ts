@@ -1,32 +1,34 @@
-import xs, { Stream, Subscription } from 'xstream';
-import dropRepeats from 'xstream/extra/dropRepeats';
-import sampleCombine from 'xstream/extra/sampleCombine';
-import { adapt } from '@cycle/run/lib/adapt';
-import { Sources, Sinks } from '@cycle/run';
-import { CycleMainFn } from '../types';
-import { DefaultInteractionsSource } from './DefaultInteractionsSource';
+import xs, { Stream, Subscription } from "xstream";
+import dropRepeats from "xstream/extra/dropRepeats";
+import sampleCombine from "xstream/extra/sampleCombine";
+import { adapt } from "@cycle/run/lib/adapt";
+import { Sources, Sinks, Drivers, Main } from "@cycle/run";
+import { CycleMainFn } from "../types";
+import { DefaultInteractionsSource } from "./DefaultInteractionsSource";
 import {
   InteractionsSourceInternal,
   InteractionEvent,
   InteractFn
-} from './types';
-import { makeInteractFn } from './makeInteractFn';
-import { ReactPropsSource } from '../index';
+} from "./types";
+import { makeInteractFn } from "./makeInteractFn";
+import { ReactPropsSource } from "../index";
 
 export function makeInteractionsWrapper() {
-  const name = 'interactions';
-  const fnCallEffectDriverKey = 'fnCallEffect'; // TODO: Make configurable
+  const name = "interactions";
+  const fnCallEffectDriverKey = "fnCallEffect"; // TODO: Make configurable
 
   const interaction$ = xs.create<InteractionEvent>();
   const interactFn = makeInteractFn(interaction$);
 
   function interactionsWrapper(mainFn: CycleMainFn): CycleMainFn {
-    return function mainWithInteractions(sources: Sources): Sinks {
+    return function mainWithInteractions(
+      sources: Sources<Drivers>
+    ): Sinks<Main> {
       const interactionsSource = new DefaultInteractionsSource(interaction$);
       const interactionsSourceProxyHandler = {
         // tslint:disable-next-line no-any
         get(target: any, attr: string) {
-          if (typeof target[attr] === 'undefined') {
+          if (typeof target[attr] === "undefined") {
             return (target as InteractionsSourceInternal).select(attr);
           }
           return target[attr];
@@ -51,14 +53,14 @@ export function makeInteractionsWrapper() {
           .compose(sampleCombine(props$))
           .map(([upstreamInteractions, props]) => {
             const fnCallStreams = Object.keys(upstreamInteractions)
-              .filter(propName => typeof props[propName] === 'function')
+              .filter(propName => typeof props[propName] === "function")
               .map(propName => {
-                return upstreamInteractions[
-                  propName
-                ].map(propInteractionValue => ({
-                  fn: props[propName],
-                  args: [propInteractionValue]
-                }));
+                return upstreamInteractions[propName].map(
+                  propInteractionValue => ({
+                    fn: props[propName],
+                    args: [propInteractionValue]
+                  })
+                );
               });
 
             return xs.merge.apply(null, fnCallStreams);

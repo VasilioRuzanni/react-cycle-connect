@@ -1,8 +1,8 @@
-import xs, { Stream, MemoryStream, Subscription } from 'xstream';
-import dropRepeats from 'xstream/extra/dropRepeats';
-import { Sources, Sinks } from '@cycle/run';
-import { adapt } from '@cycle/run/lib/adapt';
-import { CycleMainFn } from '../types';
+import xs, { Stream, MemoryStream, Subscription } from "xstream";
+import dropRepeats from "xstream/extra/dropRepeats";
+import { Sources, Sinks, Drivers, Main } from "@cycle/run";
+import { adapt } from "@cycle/run/lib/adapt";
+import { CycleMainFn } from "../types";
 
 export class ReactPropsSource<TProps> {
   public props$: MemoryStream<TProps>;
@@ -13,7 +13,9 @@ export class ReactPropsSource<TProps> {
     this.props$ = adapt(this._props$);
   }
 
-  public pluck<P extends keyof TProps>(propName: P): Stream<TProps[P]> {
+  public pluck<P extends keyof TProps>(
+    propName: P
+  ): Stream<TProps[P] | undefined> {
     return this._props$
       .map(props => (props && props[propName]) || void 0)
       .compose(dropRepeats())
@@ -22,8 +24,10 @@ export class ReactPropsSource<TProps> {
 
   public select<P extends keyof TProps>(
     propSelector: P
-  ): ReactPropsSource<TProps[P]> {
-    return new ReactPropsSource<TProps[P]>(this.pluck(propSelector));
+  ): ReactPropsSource<TProps[P] | undefined> {
+    return new ReactPropsSource<TProps[P] | undefined>(
+      this.pluck(propSelector)
+    );
   }
 }
 
@@ -34,18 +38,18 @@ export function makeReactPropsWrapper<TProps extends {}>(
   propsWrapper: (main: CycleMainFn) => CycleMainFn;
   props$: MemoryStream<TProps>;
 } {
-  const name = 'props';
+  const name = "props";
   const props$ = xs.createWithMemory<TProps>().endWhen(willUnmount$);
 
   function reactPropsWrapper(mainFn: CycleMainFn): CycleMainFn {
-    return function mainWithReactProps(sources: Sources): Sinks {
+    return function mainWithReactProps(sources: Sources<Drivers>): Sinks<Main> {
       const sinkPropsImitator$ = xs.create<TProps>();
       const combinedProps$ = xs
         .merge(inputProps$, sinkPropsImitator$)
         .fold<TProps>(
           (combinedProps: TProps, newProps: TProps) => ({
-            ...combinedProps as any,
-            ...newProps as any
+            ...(combinedProps as any),
+            ...(newProps as any)
           }),
           void 0 as any | undefined
         )
