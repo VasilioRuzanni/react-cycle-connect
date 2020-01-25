@@ -1,8 +1,8 @@
-import React, { FormEvent, FocusEvent, KeyboardEvent, Ref } from 'react';
-import classnames from 'classnames';
-import xs, { Stream } from 'xstream';
-import sampleCombine from 'xstream/extra/sampleCombine';
-import { StateSource, Reducer } from 'cycle-onionify';
+import React, { FormEvent, FocusEvent, KeyboardEvent, Ref } from "react";
+import classnames from "classnames";
+import xs, { Stream } from "xstream";
+import sampleCombine from "xstream/extra/sampleCombine";
+import { StateSource, Reducer } from "@cycle/state";
 import {
   cycleConnect,
   InteractionsSource,
@@ -12,8 +12,8 @@ import {
   InteractionsProps,
   CycleConnectOptionsProps,
   CycleConnectedProps
-} from 'react-cycle-connect';
-import { Todo } from './types';
+} from "react-cycle-connect";
+import { Todo } from "./types";
 
 // TODO: Move to constants
 const ENTER_KEY_CODE = 13;
@@ -42,13 +42,13 @@ export type ViewProps = Props & CycleConnectedProps<InteractionEvents>;
 
 export interface Sources {
   props: ReactPropsSource<Props>;
-  onion: StateSource<TodoFormState>;
+  state: StateSource<TodoFormState>;
   interactions: InteractionsSource<InteractionEvents>;
 }
 
 export interface Sinks {
   props: Stream<Partial<ViewProps>>;
-  onion: Stream<Reducer<TodoFormState>>;
+  state: Stream<Reducer<TodoFormState>>;
   interactions: InteractionsSink<
     Props,
     {
@@ -74,17 +74,22 @@ function intent(
   const keyPress$ = interactions.keyDown;
 
   const enterKeyPress$ = keyPress$
-    .filter(event => !!event && event.which === ENTER_KEY_CODE)
+    .filter(
+      (event: { which: number }) => !!event && event.which === ENTER_KEY_CODE
+    )
     .mapTo(null);
 
   const escKeyPress$ = keyPress$
-    .filter(event => !!event && event.which === ESC_KEY_CODE)
+    .filter(
+      (event: { which: number }) => !!event && event.which === ESC_KEY_CODE
+    )
     .mapTo(null);
 
   const blur$ = interactions.blur.mapTo(null);
 
   const change$ = interactions.change.map(
-    event => (event && event.currentTarget.value) || ''
+    (event: { currentTarget: { value: any } }) =>
+      (event && event.currentTarget.value) || ""
   );
 
   return {
@@ -94,8 +99,8 @@ function intent(
       // NOTE: Only submit on blur if we're editing
       blur$
         .compose(sampleCombine(isEdit$))
-        .map(([_, isEdit]) => isEdit)
-        .filter(isEdit => isEdit)
+        .map(([_, isEdit]: [any, any]) => isEdit)
+        .filter((isEdit: any) => isEdit)
     ),
     cancel$: escKeyPress$
   };
@@ -104,7 +109,7 @@ function intent(
 function model(actions: ModelActions): Stream<Reducer<TodoFormState>> {
   const defaultReducer$ = xs.of(function defaultReducer(state: TodoFormState) {
     if (state) return state;
-    return { text: '' };
+    return { text: "" };
   });
 
   const formChangeReducer$ = actions.change$.map(
@@ -128,17 +133,17 @@ function model(actions: ModelActions): Stream<Reducer<TodoFormState>> {
 }
 
 function main(sources: Sources): Sinks {
-  const state$ = sources.onion.state$;
+  const state$ = sources.state.stream;
   const actions = intent(
     sources.interactions,
-    sources.props.pluck('isEdit').map(isEdit => !!isEdit)
+    sources.props.pluck("isEdit").map((isEdit: any) => !!isEdit)
   );
   const reducer$ = model(actions);
   const formValue$ = state$.map(state => state.text);
 
   return {
     props: state$,
-    onion: reducer$,
+    state: reducer$,
     interactions: xs.of({
       onSubmit: actions.submit$
         .compose(sampleCombine(formValue$))
@@ -165,7 +170,7 @@ export function TodoForm({
   return (
     <input
       className={classnames({
-        'new-todo': !isEdit,
+        "new-todo": !isEdit,
         edit: isEditing
       })}
       ref={onRef}
@@ -180,4 +185,4 @@ export function TodoForm({
   );
 }
 
-export default cycleConnect(main)(TodoForm);
+export default cycleConnect<Props>(main)(TodoForm);

@@ -1,15 +1,15 @@
-import React, { FormEvent } from 'react';
-import xs, { Stream } from 'xstream';
-import { Sinks } from '@cycle/run';
-import { StateSource, Reducer } from 'cycle-onionify';
+import React, { FormEvent } from "react";
+import xs, { Stream } from "xstream";
+import { Sinks, Main } from "@cycle/run";
+import { StateSource, Reducer } from "@cycle/state";
 import {
   cycleConnect,
   InteractionsSource,
   ReactPropsSource,
   CycleConnectedProps
-} from 'react-cycle-connect';
-import TodoForm from './TodoForm';
-import { Todo } from './types';
+} from "react-cycle-connect";
+import TodoForm from "./TodoForm";
+import { Todo } from "./types";
 
 interface InteractionEvents {
   todoFormSubmit: FormEvent<HTMLFontElement>;
@@ -26,7 +26,7 @@ export interface Sources {
   props: ReactPropsSource<Props>;
 }
 
-function main(sources: Sources): Sinks {
+function main(sources: Sources): Sinks<Main> {
   return {
     interactions: xs.of({
       onFormSubmit: sources.interactions.todoFormSubmit
@@ -40,9 +40,9 @@ export function TodosScreenHeader({ interactions, interact }: ViewProps) {
       <h1>todos</h1>
 
       <TodoForm
-        isolate={{ onion: 'newItemFormState' }}
+        isolate={{ state: "newItemFormState" }}
         isEdit={false}
-        onSubmit={interact('todoFormSubmit')}
+        onSubmit={interact("todoFormSubmit")}
         placeholder="What needs to be done?"
       />
     </header>

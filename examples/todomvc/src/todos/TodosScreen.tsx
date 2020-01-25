@@ -1,26 +1,26 @@
-import React, { Component, FormEvent, MouseEvent } from 'react';
-import xs, { Stream } from 'xstream';
-import { Sinks } from '@cycle/run';
-import { StateSource, Reducer } from 'cycle-onionify';
+import React, { Component, FormEvent, MouseEvent } from "react";
+import xs, { Stream } from "xstream";
+// import { Sinks } from '@cycle/run';
+import { StateSource, Reducer } from "@cycle/state";
 import {
   cycleConnect,
   InteractionsSource,
-  CycleConnectedProps,
-} from 'react-cycle-connect';
+  CycleConnectedProps
+} from "react-cycle-connect";
 import {
   Collection,
   makeFilteredListLens
-} from 'react-cycle-connect/lib/extra/onionify';
-import TodoItem from './TodoItem';
-import TodosScreenFooter from './TodosScreenFooter';
+} from "react-cycle-connect/lib/extra/onionify";
+import TodoItem from "./TodoItem";
+import TodosScreenFooter from "./TodosScreenFooter";
 import {
   SHOW_ALL,
   SHOW_COMPLETED,
   SHOW_ACTIVE
-} from '../constants/todoFilters';
-import { Todo } from './types';
-import { TodoFormState } from './TodoForm';
-import TodosScreenHeader from './TodosScreenHeader';
+} from "../constants/todoFilters";
+import { Todo } from "./types";
+import { TodoFormState } from "./TodoForm";
+import TodosScreenHeader from "./TodosScreenHeader";
 
 const TODO_FILTER_FNS = {
   [SHOW_ALL]: () => true,
@@ -50,12 +50,12 @@ export interface ViewProps extends CycleConnectedProps<InteractionEvents> {
 
 export interface Sources {
   interactions: InteractionsSource<InteractionEvents>;
-  onion: StateSource<TodosState>;
+  state: StateSource<TodosState>;
 }
 
 export interface Sinks {
   props: Stream<Partial<ViewProps>>;
-  onion: Stream<Reducer<TodosState>>;
+  state: Stream<Reducer<TodosState>>;
 }
 
 interface ModelActions {
@@ -66,9 +66,9 @@ interface ModelActions {
 }
 
 const filteredListLens = makeFilteredListLens<TodosState, Todo>(
-  'todos',
+  "todos",
   (item, state) => TODO_FILTER_FNS[state.filter](item),
-  'id'
+  "id"
 );
 
 function intent(interactions: InteractionsSource<InteractionEvents>) {
@@ -76,7 +76,7 @@ function intent(interactions: InteractionsSource<InteractionEvents>) {
     filterUpdate$: interactions.filterChange,
     toggleAll$: interactions.toggleAllClick.mapTo(null),
     clearCompleted$: interactions.clearCompleted.mapTo(null),
-    createTodo$: interactions.headerFormSubmit.filter(text => !!text)
+    createTodo$: interactions.headerFormSubmit.filter((text: any) => !!text)
   };
 }
 
@@ -84,7 +84,7 @@ function model(actions: ModelActions): Stream<Reducer<TodosState>> {
   const defaultReducer$ = xs.of(function defaultReducer(
     state: TodosState
   ): TodosState {
-    if (typeof state !== 'undefined') return state;
+    if (typeof state !== "undefined") return state;
 
     return {
       todos: [],
@@ -132,7 +132,7 @@ function model(actions: ModelActions): Stream<Reducer<TodosState>> {
               text
             }
           ],
-          newItemFormState: { text: '' }
+          newItemFormState: { text: "" }
         };
       }
   );
@@ -169,14 +169,14 @@ function computedProps({ todos, filter }: TodosState) {
 }
 
 function main(sources: Sources): Sinks {
-  const state$ = sources.onion.state$ as Stream<TodosState>;
+  const state$ = sources.state.stream as Stream<TodosState>;
   const actions = intent(sources.interactions);
   const reducer$ = model(actions);
   const computedProps$ = state$.map(computedProps);
 
   return {
     props: xs.merge(state$, computedProps$),
-    onion: reducer$
+    state: reducer$
   };
 }
 
@@ -187,12 +187,14 @@ export function TodosScreen({
   completedCount,
   activeCount
 }: ViewProps) {
+  console.log("running todoscreen component render");
+  console.log("todos", todos);
   return (
     <section className="todoapp">
       <TodosScreenHeader onFormSubmit={interactions.headerFormSubmit} />
 
       <section className="main">
-        {todos.length > 0 && (
+        {todos && todos.length > 0 && (
           <span>
             <input
               className="toggle-all"
@@ -207,7 +209,7 @@ export function TodosScreen({
           <Collection lens={filteredListLens} itemComponent={TodoItem} />
         </ul>
 
-        {todos.length > 0 && (
+        {todos && todos.length > 0 && (
           <TodosScreenFooter
             completedCount={completedCount}
             activeCount={activeCount}

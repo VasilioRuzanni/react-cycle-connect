@@ -1,21 +1,22 @@
-import { Stream } from 'xstream';
+import { Stream } from "xstream";
 import {
   Drivers,
   Driver,
   DisposeFunction,
   Sources,
   Sinks,
-  SinkProxies
-} from '@cycle/run';
+  SinkProxies,
+  Main
+} from "@cycle/run";
 import {
   ReactNode,
   ComponentClass,
   SFC,
   ReactElement,
   ComponentType
-} from 'react';
-import { InteractionsProps } from './interactions/index';
-import { ReactPropsSource } from './wrappers/reactPropsWrapper';
+} from "react";
+import { InteractionsProps } from "./interactions/index";
+import { ReactPropsSource } from "./wrappers/reactPropsWrapper";
 
 // React-related
 
@@ -25,29 +26,29 @@ export interface CycleConnectContextType {
 
 // Cycle-connect related
 
-export type StatelessSinkProxies<Si extends Sinks> = {
-  [P in keyof Si]: Stream<any>
+export type StatelessSinkProxies<Si extends Sinks<Main>> = {
+  [P in keyof Si]: Stream<any>;
 };
 
-export type ConnectedSources<TSourceProps> = Sources & {
+export type ConnectedSources<TSourceProps> = Sources<Drivers> & {
   props: ReactPropsSource<TSourceProps>;
 };
 
-export type ConnectedSinks<TSinkProps> = Sinks & {
+export type ConnectedSinks<TSinkProps> = Sinks<Main> & {
   props: Stream<TSinkProps>;
 } & {
-    interactions: Stream<TSinkProps>;
-  };
+  interactions: Stream<TSinkProps>;
+};
 
 export type CycleMainFn<TSourceProps = {}, TSinkProps = {}> = (
-  sources: ConnectedSources<TSourceProps> | Sources
-) => ConnectedSinks<TSinkProps> | Sinks;
+  sources: ConnectedSources<TSourceProps> | Sources<Drivers>
+) => ConnectedSinks<TSinkProps> | Sinks<Main>;
 
-export type CycleMainFnWrapper = (mainFn: CycleMainFn) => CycleMainFn;
+export type CycleMainFnWrapper = (mainFn: Main) => Main;
 
 export type CycleRunFunction = (
-  main: CycleMainFn,
-  drivers: Drivers<Sources, Sinks>
+  main: Main,
+  drivers: Drivers
 ) => DisposeFunction;
 
 export type IsolateOptionStatic =
@@ -63,26 +64,32 @@ export type IsolateOption = IsolateOptionStatic | IsolateOptionFn;
 
 export type RenderOption = (props: any) => ReactNode;
 
+export type ShouldUpdateFunction = (
+  props: Object,
+  nextProps: Object
+) => boolean;
+
 export type CycleConnectOptions = {
   root?: boolean;
   runFn?: CycleRunFunction;
   isolate?: IsolateOption;
   render?: RenderOption;
-  drivers?: Drivers<Sources, Sinks>;
+  drivers?: Drivers;
   wrappers?: CycleMainFnWrapper[];
+  shouldUpdate?: ShouldUpdateFunction;
   _innerWrappers?: CycleMainFnWrapper[];
   displayName?: string;
 };
 
 export type CycleNode = {
-  childSources: Sources;
-  sinkProxies: SinkProxies<Sinks>;
+  childSources: Sources<Drivers>;
+  sinkProxies: SinkProxies<Sinks<Main>>;
   run: () => DisposeFunction;
 };
 
 export type CycleNodeLink = {
   sources: any;
-  sinkProxies: SinkProxies<Sinks>;
+  sinkProxies: SinkProxies<Sinks<Main>>;
 };
 
 export interface CycleConnectOptionsProps {

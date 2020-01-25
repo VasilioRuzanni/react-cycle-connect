@@ -1,4 +1,4 @@
-import { Lens } from 'cycle-onionify';
+import { Lens } from "@cycle/state";
 
 export type EqualsFn<TItemState> = (
   item1: TItemState,
@@ -12,11 +12,11 @@ export function makeFilteredListLens<TState extends {}, TItemState>(
 ): Lens<TState, TItemState[]> {
   const mapStateProp = (state: TState) => state[stateProp] as TItemState[];
   const equalsFn =
-    typeof equals === 'function'
+    typeof equals === "function"
       ? equals
       : (item1: TItemState, item2: TItemState) =>
-          typeof item1 === 'object' &&
-          typeof item2 === 'object' &&
+          typeof item1 === "object" &&
+          typeof item2 === "object" &&
           item1[equals] === item2[equals];
 
   return {

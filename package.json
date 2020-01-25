@@ -1,6 +1,6 @@
 {
   "name": "react-cycle-connect",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Bring Cycle.js dataflows and side effect control to React.",
   "license": "MIT",
   "homepage": "https://github.com/VasilioRuzanni/react-cycle-connect",
@@ -23,15 +23,15 @@
     "publish": "cd build && npm publish"
   },
   "dependencies": {
-    "@cycle/isolate": "^3.2.0",
-    "@cycle/run": "^4.0.0",
-    "cycle-onionify": "^5.0.0",
-    "react": "^16.2.0",
-    "xstream": "^11.2.0"
+    "@cycle/isolate": "5.1.0",
+    "@cycle/run": "5.3.0",
+    "@cycle/state": "^1.4.0",
+    "react": "~16.9.0",
+    "xstream": "^11.11.0"
   },
   "devDependencies": {
-    "@types/react": "^16.0.38",
-    "@types/react-dom": "^16.0.4",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
     "ava": "0.25.0",
     "prettier": "^1.10.2",
     "rollup": "^0.56.0",
@@ -43,6 +43,6 @@
     "tslint": "5.9.1",
     "tslint-config-prettier": "^1.8.0",
     "tslint-react": "^3.5.1",
-    "typescript": "2.7.1"
+    "typescript": "~3.7.4"
   }
 }

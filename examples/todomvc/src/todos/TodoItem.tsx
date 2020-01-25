@@ -1,18 +1,18 @@
-import React, { Component, MouseEvent, ChangeEvent } from 'react';
-import classnames from 'classnames';
-import xs, { Stream } from 'xstream';
-import { Sinks } from '@cycle/run';
-import { StateSource, Reducer } from 'cycle-onionify';
+import React, { Component, MouseEvent, ChangeEvent } from "react";
+import classnames from "classnames";
+import xs, { Stream } from "xstream";
+// import { Sinks } from '@cycle/run';
+import { StateSource, Reducer } from "@cycle/state";
 import {
   cycleConnect,
   InteractionsSource,
   InteractionsSink,
   InteractionEvent,
   CycleConnectedProps
-} from 'react-cycle-connect';
-import { StateIsolator } from 'react-cycle-connect/lib/extra/onionify';
-import TodoForm, { TodoFormState } from './TodoForm';
-import { Todo } from './types';
+} from "react-cycle-connect";
+import { StateIsolator } from "react-cycle-connect/lib/extra/onionify";
+import TodoForm, { TodoFormState } from "./TodoForm";
+import { Todo } from "./types";
 
 export interface TodoItemState {
   id: number;
@@ -38,12 +38,12 @@ export interface ViewProps extends CycleConnectedProps<InteractionEvents> {
 
 export interface Sources {
   interactions: InteractionsSource<InteractionEvents>;
-  onion: StateSource<any>;
+  state: StateSource<any>;
 }
 
 export interface Sinks {
   props: Stream<{ [name: string]: any }>;
-  onion: Stream<Reducer<TodoItemState>>;
+  state: Stream<Reducer<TodoItemState>>;
 }
 
 function intent(interactions: InteractionsSource<InteractionEvents>) {
@@ -53,10 +53,13 @@ function intent(interactions: InteractionsSource<InteractionEvents>) {
     startEdit$: interactions.textDoubleClick,
     cancelEdit$: interactions.formCancel,
     saveTodo$: formSubmit$.filter((text: string) => !!text),
-    toggle$: interactions.toggle.map(event => event.currentTarget.checked),
+    toggle$: interactions.toggle.map(
+      (event: { currentTarget: { checked: any } }) =>
+        event.currentTarget.checked
+    ),
     destroy$: xs
       .merge(
-        interactions.select('destroyClick'),
+        interactions.select("destroyClick"),
         formSubmit$.filter((text: string) => !text)
       )
       .mapTo(null)
@@ -124,13 +127,13 @@ function model(actions: {
 }
 
 function main(sources: Sources): Sinks {
-  const state$ = sources.onion.state$ as Stream<TodoItemState>;
+  const state$ = sources.state.stream as Stream<TodoItemState>;
   const actions = intent(sources.interactions);
   const reducer$ = model(actions);
 
   return {
     props: state$,
-    onion: reducer$
+    state: reducer$
   };
 }
 
@@ -150,17 +153,17 @@ export function TodoItem({
       />
     </StateIsolator>
   ) : (
-      <div className="view">
-        <input
-          className="toggle"
-          type="checkbox"
-          checked={completed}
-          onChange={interactions.toggle}
-        />
-        <label onDoubleClick={interactions.textDoubleClick}>{text}</label>
-        <button className="destroy" onClick={interactions.destroyClick} />
-      </div>
-    );
+    <div className="view">
+      <input
+        className="toggle"
+        type="checkbox"
+        checked={completed}
+        onChange={interactions.toggle}
+      />
+      <label onDoubleClick={interactions.textDoubleClick}>{text}</label>
+      <button className="destroy" onClick={interactions.destroyClick} />
+    </div>
+  );
 
   return (
     <li

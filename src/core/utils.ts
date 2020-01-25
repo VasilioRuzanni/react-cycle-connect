@@ -1,12 +1,12 @@
-import xs, { Stream, Subscription } from 'xstream';
-import { Drivers, Sources, Sinks, SinkProxies } from '@cycle/run';
-import isolate from '@cycle/isolate';
+import xs, { Stream, Subscription } from "xstream";
+import { Drivers, Sources, Sinks, SinkProxies, Main } from "@cycle/run";
+import isolate from "@cycle/isolate";
 import {
   CycleMainFn,
   CycleMainFnWrapper,
   CycleConnectOptionsProps,
   IsolateOption
-} from '../types';
+} from "../types";
 
 // [[TODO: Think about renaming SinkProxies to something else maybe
 // to prevent confusing them with `@cycle/run`s SinkProxies type
@@ -17,16 +17,29 @@ import {
 // I mean, this is not really only internal stuff, its what drives
 // the app, so the actual streams should be a particular lib streams
 // (xstream, RxJS, most)
-export function makeSinkProxies<So extends Sources, Si extends Sinks>(
-  driversOrSources: Drivers<So, Si> | So
-): SinkProxies<Si> {
-  const sinkProxies: SinkProxies<Si> = {} as SinkProxies<Si>;
-  // Note, that in both cases (drivers and sources) we need to preserve
-  // all `sources`'  attributes, even if they're undefined, because there
-  // might be write-only drivers that provide nothing as source, but still
-  // expect something as sinks. So, if we filter them out as being "falsy"
-  // and not create a sink proxy with that name, then we would never get
-  // a value from a program to a write-only driver.
+// export function makeSinkProxies<
+//   So extends Sources<Drivers>,
+//   Si extends Sinks<Main>
+// >(driversOrSources: Drivers | So): SinkProxies<Si> {
+//   const sinkProxies: SinkProxies<Si> = {} as SinkProxies<Si>;
+//   // Note, that in both cases (drivers and sources) we need to preserve
+//   // all `sources`'  attributes, even if they're undefined, because there
+//   // might be write-only drivers that provide nothing as source, but still
+//   // expect something as sinks. So, if we filter them out as being "falsy"
+//   // and not create a sink proxy with that name, then we would never get
+//   // a value from a program to a write-only driver.
+//   for (const name in driversOrSources) {
+//     if (driversOrSources.hasOwnProperty(name)) {
+//       sinkProxies[name] = xs.create<any>();
+//     }
+//   }
+//   return sinkProxies;
+// }
+
+export function makeSinkProxies(
+  driversOrSources: Drivers | Sources<Drivers>
+): SinkProxies<Drivers | Sources<Drivers>> {
+  const sinkProxies: SinkProxies<Drivers> = {} as SinkProxies<Drivers>;
   for (const name in driversOrSources) {
     if (driversOrSources.hasOwnProperty(name)) {
       sinkProxies[name] = xs.create<any>();
@@ -49,10 +62,10 @@ export function subscribeStreamToStream(
 }
 
 export function subscribeSinkProxiesToSinks(
-  sinkProxies: SinkProxies<Sinks>,
-  sinks: Sinks
+  sinkProxies: SinkProxies<Drivers | Sources<Drivers>>,
+  sinks: Sinks<Main>
 ): Subscription[] {
-  const sinkNames: Array<keyof Sinks> = Object.keys(sinks).filter(
+  const sinkNames: Array<string> = Object.keys(sinks).filter(
     name => !!sinkProxies[name]
   );
 
@@ -90,7 +103,7 @@ export function maybeIsolate<P extends CycleConnectOptionsProps>(
   // Rendering-level `isolate` prop, overrides component-level
   // `isolate` option
   const isolateProp =
-    initialProps && typeof initialProps.isolate !== 'undefined'
+    initialProps && typeof initialProps.isolate !== "undefined"
       ? initialProps.isolate
       : void 0;
 
@@ -104,7 +117,7 @@ export function maybeIsolate<P extends CycleConnectOptionsProps>(
   }
 
   const _isolateOption =
-    typeof isolateOption === 'function'
+    typeof isolateOption === "function"
       ? isolateOption(initialProps)
       : isolateOption;
 

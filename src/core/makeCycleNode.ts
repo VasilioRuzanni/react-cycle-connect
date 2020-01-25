@@ -1,47 +1,48 @@
-import { Stream, Subscription } from 'xstream';
+import { Stream, Subscription } from "xstream";
 import {
   Drivers,
   Sources,
   Sinks,
   DisposeFunction,
-  SinkProxies
-} from '@cycle/run';
-import isolate from '@cycle/isolate';
-import { makeFnCallEffectDriver } from '../drivers/fnCallEffectDriver';
+  SinkProxies,
+  Main
+} from "@cycle/run";
+import isolate from "@cycle/isolate";
+import { makeFnCallEffectDriver } from "../drivers/fnCallEffectDriver";
 import {
   CycleConnectOptions,
   CycleConnectOptionsProps,
   CycleMainFn,
   CycleNode,
   StatelessSinkProxies
-} from '../types';
+} from "../types";
 import {
   makeSinkProxies,
   wrapMain,
   maybeIsolate,
   subscribeSinkProxiesToSinks
-} from './utils';
+} from "./utils";
 
 export function makeCycleNode<P extends CycleConnectOptionsProps>(
   mainFn: CycleMainFn,
   cycleConnectOptions: CycleConnectOptions = {},
-  upstreamSources: Sources = {},
-  upstreamSinkProxies: SinkProxies<Sinks> = {},
+  upstreamSources: Sources<Drivers> = {},
+  upstreamSinkProxies: SinkProxies<Sinks<Main>> = {},
   initialProps?: P,
   componentName?: string
 ): CycleNode {
   const isRootCycle = !!cycleConnectOptions.root;
   const { drivers, isolate: isolateOption } = cycleConnectOptions;
 
-  const sinkProxies: StatelessSinkProxies<Sinks> =
+  const sinkProxies: StatelessSinkProxies<Sinks<Main>> =
     isRootCycle && drivers ? makeSinkProxies(drivers) : {};
-  const childSources: Sources = {};
+  const childSources: Sources<Drivers> = {};
   const sinkSubscriptions: Subscription[] = [];
   const upstreamSinkSubscriptions: Subscription[] = [];
-  const innerSinks: Sinks = {};
+  const innerSinks: Sinks<Main> = {};
 
   function cycleNodeify(_mainFn: CycleMainFn): CycleMainFn {
-    return function mainCycleNodeified(sources: Sources) {
+    return function mainCycleNodeified(sources: Sources<Drivers>) {
       Object.assign(childSources, sources);
       const _innerSinks = _mainFn(sources);
 
@@ -101,7 +102,7 @@ export function makeCycleNode<P extends CycleConnectOptionsProps>(
     run(): DisposeFunction {
       if (isRootCycle) {
         const runFn = cycleConnectOptions.runFn;
-        if (typeof runFn !== 'function') {
+        if (typeof runFn !== "function") {
           throw new Error(
             `You need the 'runFn' passed as configuration
             option of cycleConnect(...) when 'root' option is enabled.`
