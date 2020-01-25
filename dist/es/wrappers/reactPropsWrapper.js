@@ -43,6 +43,7 @@ export function makeReactPropsWrapper(inputProps$, willUnmount$) {
                 .remember()
                 .endWhen(willUnmount$);
             var _sources = __assign(__assign({}, sources), (_a = {}, _a[name] = new ReactPropsSource(combinedProps$), _a));
+            console.log("_sources", _sources);
             var sinks = mainFn(_sources);
             var propsSink = sinks[name];
             delete sinks[name];
