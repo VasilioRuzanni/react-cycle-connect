@@ -11,10 +11,10 @@ var __assign = (this && this.__assign) || function () {
 };
 import { Stream } from "xstream";
 var lifecycleHookNames = [
-    "willMount",
+    // "willMount",
     "didMount",
-    "willReceiveProps",
-    "willUpdate",
+    // "willReceiveProps",
+    // "willUpdate",
     "didUpdate",
     "willUnmount",
     "didCatch"
