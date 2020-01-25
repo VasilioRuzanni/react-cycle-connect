@@ -26,6 +26,7 @@ export declare type IsolateOptionStatic = {
 export declare type IsolateOptionFn<TProps = any> = (props: TProps) => IsolateOptionStatic;
 export declare type IsolateOption = IsolateOptionStatic | IsolateOptionFn;
 export declare type RenderOption = (props: any) => ReactNode;
+export declare type ShouldUpdateFunction = (props: Object, nextProps: Object) => boolean;
 export declare type CycleConnectOptions = {
     root?: boolean;
     runFn?: CycleRunFunction;
@@ -33,6 +34,7 @@ export declare type CycleConnectOptions = {
     render?: RenderOption;
     drivers?: Drivers;
     wrappers?: CycleMainFnWrapper[];
+    shouldUpdate?: ShouldUpdateFunction;
     _innerWrappers?: CycleMainFnWrapper[];
     displayName?: string;
 };

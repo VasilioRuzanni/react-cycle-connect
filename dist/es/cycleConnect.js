@@ -56,6 +56,7 @@ export function cycleConnect(mainFn, options) {
                     "AnonymousComponent")) ||
             "defaultRenderFn";
         var displayName = options.displayName || "cycleConnect(" + sourceComponentName + ")";
+        var shouldUpdateFn = options.shouldUpdate || (function (x) { return true; });
         return _a = /** @class */ (function (_super) {
                 __extends(CycleConnectContainer, _super);
                 function CycleConnectContainer(props, context) {
@@ -77,7 +78,6 @@ export function cycleConnect(mainFn, options) {
                     _this.interactionsProp = makeInteractionsProp(interactFn);
                     var _options = __assign(__assign({}, options), { _innerWrappers: [interactionsWrapper, propsWrapper, lifecycleWrapper] });
                     _this.cycleNode = makeCycleNode(_mainFn, _options, sources, sinkProxies, props, displayName);
-                    _this.subscribeToPropsUpdates();
                     _this.disposeCycleNode = _this.cycleNode.run();
                     return _this;
                 }
@@ -99,6 +99,7 @@ export function cycleConnect(mainFn, options) {
                 // }
                 CycleConnectContainer.prototype.componentDidMount = function () {
                     //   this.lifecycleStreams.willMount$._n(null);
+                    this.subscribeToPropsUpdates(shouldUpdateFn);
                     this.lifecycleStreams.didMount$._n(null);
                 };
                 // componentWillReceiveProps(nextProps: Readonly<TOuterProps>) {
@@ -121,14 +122,18 @@ export function cycleConnect(mainFn, options) {
                 CycleConnectContainer.prototype.componentDidCatch = function (error, errorInfo) {
                     this.lifecycleStreams.didCatch$._n({ error: error, errorInfo: errorInfo });
                 };
-                CycleConnectContainer.prototype.subscribeToPropsUpdates = function () {
+                CycleConnectContainer.prototype.subscribeToPropsUpdates = function (shouldUpdateFn) {
                     var _this = this;
-                    console.log("susbcribed to props updates");
+                    console.log("susbcribed to props updates", displayName);
                     this.props$.endWhen(this.lifecycleStreams.willUnmount$).addListener({
                         next: function (props) {
+                            console.log("next", displayName);
+                            console.log("previous prop?", _this.propsSnapshot);
                             console.log("got a new prop", props);
+                            var update = shouldUpdateFn(_this.propsSnapshot, props);
+                            console.log("shouldUpdate", update);
                             _this.propsSnapshot = props;
-                            _this.forceUpdate();
+                            update && _this.forceUpdate();
                         }
                     });
                 };
