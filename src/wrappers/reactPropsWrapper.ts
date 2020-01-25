@@ -61,7 +61,7 @@ export function makeReactPropsWrapper<TProps extends {}>(
         ...sources,
         [name]: new ReactPropsSource(combinedProps$) as any
       };
-      console.log("_sources", _sources);
+
       const sinks = mainFn(_sources);
       const propsSink = sinks[name];
       delete sinks[name];

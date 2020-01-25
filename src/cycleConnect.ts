@@ -217,14 +217,9 @@ export function cycleConnect<
       }
 
       subscribeToPropsUpdates(shouldUpdateFn: ShouldUpdateFunction) {
-        console.log("susbcribed to props updates", displayName);
         this.props$.endWhen(this.lifecycleStreams.willUnmount$).addListener({
           next: (props: TInnerProps) => {
-            console.log("next", displayName);
-            console.log("previous prop?", this.propsSnapshot);
-            console.log("got a new prop", props);
             const update = shouldUpdateFn(this.propsSnapshot, props);
-            console.log("shouldUpdate", update);
             this.propsSnapshot = props;
             update && this.forceUpdate();
           }
