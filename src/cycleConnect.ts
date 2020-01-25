@@ -30,7 +30,8 @@ import {
   CycleNode,
   MakeConnectedComponentFn,
   IsolateOption,
-  CycleConnectContextType
+  CycleConnectContextType,
+  ShouldUpdateFunction
 } from "./types";
 
 const CONTEXT_TYPES = {
@@ -96,6 +97,8 @@ export function cycleConnect<
     const displayName =
       options.displayName || `cycleConnect(${sourceComponentName})`;
 
+    const shouldUpdateFn = options.shouldUpdate || (x => true);
+
     return class CycleConnectContainer extends PureComponent<TOuterProps> {
       static contextTypes = CONTEXT_TYPES;
       static childContextTypes = CONTEXT_TYPES;
@@ -159,8 +162,6 @@ export function cycleConnect<
           displayName
         );
 
-        this.subscribeToPropsUpdates();
-
         this.disposeCycleNode = this.cycleNode.run();
       }
 
@@ -185,6 +186,7 @@ export function cycleConnect<
 
       componentDidMount() {
         //   this.lifecycleStreams.willMount$._n(null);
+        this.subscribeToPropsUpdates(shouldUpdateFn);
         this.lifecycleStreams.didMount$._n(null);
       }
 
@@ -214,13 +216,17 @@ export function cycleConnect<
         this.lifecycleStreams.didCatch$._n({ error, errorInfo });
       }
 
-      subscribeToPropsUpdates() {
-        console.log("susbcribed to props updates");
+      subscribeToPropsUpdates(shouldUpdateFn: ShouldUpdateFunction) {
+        console.log("susbcribed to props updates", displayName);
         this.props$.endWhen(this.lifecycleStreams.willUnmount$).addListener({
           next: (props: TInnerProps) => {
+            console.log("next", displayName);
+            console.log("previous prop?", this.propsSnapshot);
             console.log("got a new prop", props);
+            const update = shouldUpdateFn(this.propsSnapshot, props);
+            console.log("shouldUpdate", update);
             this.propsSnapshot = props;
-            this.forceUpdate();
+            update && this.forceUpdate();
           }
         });
       }

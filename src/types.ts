@@ -64,6 +64,11 @@ export type IsolateOption = IsolateOptionStatic | IsolateOptionFn;
 
 export type RenderOption = (props: any) => ReactNode;
 
+export type ShouldUpdateFunction = (
+  props: Object,
+  nextProps: Object
+) => boolean;
+
 export type CycleConnectOptions = {
   root?: boolean;
   runFn?: CycleRunFunction;
@@ -71,6 +76,7 @@ export type CycleConnectOptions = {
   render?: RenderOption;
   drivers?: Drivers;
   wrappers?: CycleMainFnWrapper[];
+  shouldUpdate?: ShouldUpdateFunction;
   _innerWrappers?: CycleMainFnWrapper[];
   displayName?: string;
 };
