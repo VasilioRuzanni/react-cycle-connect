@@ -1,6 +1,6 @@
 {
   "name": "react-cycle-connect",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Bring Cycle.js dataflows and side effect control to React.",
   "license": "MIT",
   "homepage": "https://github.com/VasilioRuzanni/react-cycle-connect",
