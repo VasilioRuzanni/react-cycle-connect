@@ -41,7 +41,6 @@ export function makeReactPropsWrapper(inputProps$, willUnmount$) {
                 .fold(function (combinedProps, newProps) { return (__assign(__assign({}, combinedProps), newProps)); }, void 0)
                 .drop(1) // Dropping the initial `void 0`
                 .remember()
-                .debug(function (x) { return console.log("debug props", x); })
                 .endWhen(willUnmount$);
             var _sources = __assign(__assign({}, sources), (_a = {}, _a[name] = new ReactPropsSource(combinedProps$), _a));
             var sinks = mainFn(_sources);
