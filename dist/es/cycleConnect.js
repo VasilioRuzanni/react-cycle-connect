@@ -124,14 +124,9 @@ export function cycleConnect(mainFn, options) {
                 };
                 CycleConnectContainer.prototype.subscribeToPropsUpdates = function (shouldUpdateFn) {
                     var _this = this;
-                    console.log("susbcribed to props updates", displayName);
                     this.props$.endWhen(this.lifecycleStreams.willUnmount$).addListener({
                         next: function (props) {
-                            console.log("next", displayName);
-                            console.log("previous prop?", _this.propsSnapshot);
-                            console.log("got a new prop", props);
                             var update = shouldUpdateFn(_this.propsSnapshot, props);
-                            console.log("shouldUpdate", update);
                             _this.propsSnapshot = props;
                             update && _this.forceUpdate();
                         }
