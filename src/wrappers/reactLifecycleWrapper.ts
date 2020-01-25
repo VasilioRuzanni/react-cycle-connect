@@ -6,10 +6,10 @@ import { Sources, Sinks, Drivers, Main } from "@cycle/run";
 import { CycleMainFn } from "../types";
 
 const lifecycleHookNames = [
-  "willMount",
+  // "willMount",
   "didMount",
-  "willReceiveProps",
-  "willUpdate",
+  // "willReceiveProps",
+  // "willUpdate",
   "didUpdate",
   "willUnmount",
   "didCatch"
